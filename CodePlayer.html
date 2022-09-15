@@ -1,0 +1,174 @@
+
+<html>
+    <head>
+        <title>jQuery</title>
+        <script   src="https://code.jquery.com/jquery-3.6.1.min.js"   integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ="   crossorigin="anonymous"></script>
+<style type="text/css">
+body{
+
+    font-family: sans-serif;
+    padding:0;
+    margin:0;
+}
+
+#header{
+    width:1000%;
+    background-color: #EEEEEE;
+    padding:5px;
+    height:30px;
+}
+#logo {
+    float:left;     /* html css javascript output */
+    font-weight: bold;
+    font-size: 120%;
+    padding: 3px 5px;
+}
+#buttonContainer{
+    width:92%;
+    margin: auto;
+}
+.toggleButton{
+    float: left;
+    border: 1px solid grey;
+    padding: 6px;
+    border-right: none;
+    font-size: 90%;
+}
+.active{
+
+    background-color: #b9c8f5;
+
+}
+
+.highlightedButton{
+    background-color: rgb(211, 206, 206);
+}
+
+.panel{
+    float:left;
+    width:50%;
+    border-left:none;
+}
+.hidden{
+    display:none;
+}
+iframe{
+    border:none;
+    border-top:none;
+    border-color: grey;
+}
+textarea{
+    width: 50%;
+    resize: none;
+}
+
+#html{
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+}
+
+#output{
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+    border-right:1px solid grey;
+}
+
+</style>
+</head>
+<body>
+  
+    <div id="header">
+        <div id ="logo">
+            CodePlayer
+            </div>
+            <div id="buttonContainer">
+                <div class="toggleButton active" id="html"> HTML </div> <!-- Since we want our webpage with HTML and output to be active therefore toggelButton Actiev-->
+                <div class="toggleButton" id="css"> CSS </div>
+                <div class="toggleButton" id="javascript"> JAVASCRIPT </div>
+                <div class="toggleButton active" id="output"> OUTPUT </div> <!-- Since we want our webpage with HTML and output to be active therefore toggelButton Actiev-->
+            </div>
+            </div>
+            <div id="bodyContainer">
+
+                <textarea id= "htmlPanel" class="panel"> <p id="paragraph">Hello World!</p></textarea>
+                <!--Using hidden class in css and javascript as their panels will be hidden as we open the application: -->
+                <textarea id= "cssPanel" class="panel hidden"> p{color: green;}</textarea>
+                <textarea id= "javascriptPanel" class="panel hidden"> document.getElementById("paragraph").innerHTML="Hello Ashish!";</textarea>
+                <iframe id = "outputPanel" class="panel"></iframe>
+            </div>
+        <script type = "text/javascript">
+        
+            function updateOutput(){
+                // this function is for css:
+                $("iframe").contents().find("html").html("<html><head><style type='text/css'>"
+                     + $("#cssPanel").val() + "</style></head><body>" 
+                        + $("#htmlPanel").val() + "</body></html>");
+                
+                // For javascript:
+                
+                //  eval($("#javascriptPanel").val()); // It will evaluate the javscript string and 
+                //shows the output in the browser window but not in the iframe
+                
+                // To show changes of javascript in the iframe window:
+                document.getElementById("outputPanel").contentWindow.eval($("#javascriptPanel").val());
+            }
+
+        $(".toggleButton").hover(function() {
+        //    $(this).css("background-color","grey"); // When we hover over it changes the color to grey
+            $(this).addClass("highlightedButton");
+        }, function(){
+        //    $(this).css("background-color", "#EEEEEE"); // So when we remove our cursor it chanegs back to its original color
+            $(this).removeClass("highlightedButton");
+        });
+        
+        // when we click on css or javascript it should remove the active calss:
+
+        $(".toggleButton").click(function(){
+            $(this).toggleClass("active");
+            $(this).removeClass("highlightedButton");
+
+        // Here we are taking the textarea id and adding panel at the end since we have htmlPanel, cssPanel
+        // JavascriptPanet, outputPanel that is Panel at the end and we are saving that
+        // in a variable.
+
+            var panelId = $(this).attr("id") + "Panel";
+            $("#" + panelId).toggleClass("hidden");
+        // When css is clicked the screen is divided into two and the utput window
+        // will go down because the formulae for textarea is calculated like that 
+        // so we will put the same formulae here so that the screen is divided into
+        // three, one for html, css, output so what we will do is we will use a function
+        // which can give us the count of hidden classes and then we will subtract them
+        // from total number of classes, therefore, total classes - hidden classes = active classes.
+
+        var numberOfActivePanels = 4 - $('.hidden').length;
+            $(".panel").width(($(window).width() / numberOfActivePanels) - 10);
+
+        });
+        // This is the area where the user will write the code os its textarea height calculation will be:
+
+        $(".panel").height($(window).height() - $("#header").height()-15); // -15 as it was a bit broad so we removed 15 px of padding.
+        $(".panel").width(($(window).width() / 2) - 10);
+        
+        // Changing content inside an iframe:
+         $("iframe").contents().find("html").html($("#htmlPanel").val());
+        
+        updateOutput();
+
+        // Whatever we write in the textarea will be reflected in the iframe which is the output window:
+        $("textarea").on('change keyup paste', function() {
+        
+         $("iframe").contents().find("html").html($("#htmlPanel").val());
+        // });
+
+        updateOutput();
+        
+        // Now instead of making 1 more call to the above line for css that is
+        // iframe.content.find.... we will make a function update() and call here for different classes
+        // We will call this updateOutput function 2 times, first we call it before the page is loaded
+        // then after $("textarea").on('change keyup paste', function() { that is when the page
+        // has been loaded.     
+        });
+
+        </script>
+        </body>
+</html>
